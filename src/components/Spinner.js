@@ -4,7 +4,7 @@ import loading from './loading.gif'
 export class Spinner extends Component {
   render() {
     return (
-      <div className='text-center' style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh'}}>
+      <div className='text-center' >
         <img src={loading} alt="loading" />
       </div>
     )
@@ -12,3 +12,6 @@ export class Spinner extends Component {
 }
 
 export default Spinner
+
+
+// style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh'}}
