@@ -3,11 +3,16 @@ import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
+// import Select from "react-select";
+
+// import Countryddl from "./Country";
+// import Countryddl from "./Dropdown";
 
 const News=(props)=> {
-
+  let {category, apiKey, pageSize}= props
+  const [country, setCountry] = useState("us");
   const [articles,setArticles] =useState([])
-  // const [loading,setLoading] =useState(true)
+ 
   const [page,setPage] =useState(1)
   const [totalResults,setTotalResults] =useState(0)
   
@@ -17,14 +22,15 @@ const News=(props)=> {
   
   const updateNews=async()=>{
     props.setProgress(10);
-    let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}
-    &page=${page}&pageSize=${props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}
+    &page=${page}&pageSize=${pageSize}`;
     
     // setLoading(true)
     let data = await fetch(url);
     props.setProgress(30);
     let parsedData = await data.json();
     props.setProgress(60);
+    console.log(country)
     console.log(parsedData)
     setArticles(parsedData.articles)
     setTotalResults(parsedData.totalResults) 
@@ -35,31 +41,45 @@ const News=(props)=> {
   
   useEffect(()=>{
     updateNews();
-    document.title = `${CapitalizationFistLetter(props.category)}-NewsMonkey`;
+    document.title = `${CapitalizationFistLetter(category)}-NewsMonkey`;
     // eslint-disable-next-line
-  },[])
+  },[country])
 
   const fetchMoreData = async () => {
 
-    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`;
+    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}&page=${page}&pageSize=${pageSize}`;
     setPage(page+1)
     let data = await fetch(url);
     let parsedData = await data.json();
     setArticles(articles.concat(parsedData.articles))
     setTotalResults( parsedData.totalResults)
   };
+  const handleChange = (event) => {
+    setCountry(event.target.value);
+    console.log(country)
+  };
     return (
       <div className="container my-3">
-        <h1 className="text-center" style={{ margin: "90px 0 30px 0" }}> NewsMonkey - Top {CapitalizationFistLetter(props.category)} Headlines </h1>
-
+        <h1 className="text-center" style={{ margin: "90px 0 30px 0" }}> NewsMonkey - Top {CapitalizationFistLetter(category)} Headlines </h1>
+        <div>
+        <select value={country} onChange={handleChange}>
+        <option value="in">India</option>
+        <option value="us">United States</option>
+        <option value="gb">United Kingdom</option>
+        <option value="tr">Turkey</option>
+        <option value="fr">France</option>
+        <option value="jp">Japan</option>
+        <option value="mx">Maxico</option>
+        </select>
+        {/* <button onClick={handleChange}>Submit</button> */}
+</div>
                       <InfiniteScroll
                       dataLength={articles.length}
                       next={fetchMoreData}
                       hasMore={articles.length !== totalResults}
                       loader={<Spinner/>}>
 
-                <div className="container">
-                 
+                <div className="container"> 
                   <div className="row"> 
                           {articles.map((element) => {
                           return <div className="col-md-4" key={element.url}>
@@ -83,7 +103,7 @@ const News=(props)=> {
             
 
 News.defaultProps = {
-  country: "in",
+  // country: "in",
   pageSize: 9,
   category: "general",
 };
